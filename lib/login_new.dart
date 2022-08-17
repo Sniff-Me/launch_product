@@ -1,12 +1,16 @@
+// ignore_for_file: camel_case_types, missing_return
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sniff_me/home.dart';
+import 'package:sniff_me/main2.dart';
 import 'package:sniff_me/user_model.dart';
 
 class loginNew extends StatefulWidget {
-  const loginNew({Key? key}) : super(key: key);
+  const loginNew({Key key}) : super(key: key);
+
+
 
   @override
   State<loginNew> createState() => _loginNewState();
@@ -17,16 +21,16 @@ class _loginNewState extends State<loginNew> {
   final _auth = FirebaseAuth.instance;
 
   // string for displaying the error Message
-  String? errorMessage;
+  String errorMessage;
 
 
   // our form key
   final _formKey = GlobalKey<FormState>();
   // editing Controller
-  final nameEditingController = new TextEditingController();
-  final emailEditingController = new TextEditingController();
-  final passwordEditingController = new TextEditingController();
-  final confirmPasswordEditingController = new TextEditingController();
+  final nameEditingController = TextEditingController();
+  final emailEditingController = TextEditingController();
+  final passwordEditingController = TextEditingController();
+  final confirmPasswordEditingController = TextEditingController();
 
 
   @override
@@ -37,8 +41,8 @@ class _loginNewState extends State<loginNew> {
         controller: nameEditingController,
         keyboardType: TextInputType.name,
         validator: (value) {
-          RegExp regex = new RegExp(r'^.{3,}$');
-          if (value!.isEmpty) {
+          RegExp regex = RegExp(r'^.{3,}$');
+          if (value.isEmpty) {
             return ("Name cannot be Empty");
           }
           if (!regex.hasMatch(value)) {
@@ -47,12 +51,12 @@ class _loginNewState extends State<loginNew> {
           return null;
         },
         onSaved: (value) {
-          nameEditingController.text = value!;
+          nameEditingController.text = value;
         },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.account_circle),
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          prefixIcon: const Icon(Icons.account_circle),
+          contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Name",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -65,7 +69,7 @@ class _loginNewState extends State<loginNew> {
         controller: emailEditingController,
         keyboardType: TextInputType.emailAddress,
         validator: (value) {
-          if (value!.isEmpty) {
+          if (value.isEmpty) {
             return ("Please Enter Your Email");
           }
           // reg expression for email validation
@@ -76,12 +80,12 @@ class _loginNewState extends State<loginNew> {
           return null;
         },
         onSaved: (value) {
-          nameEditingController.text = value!;
+          nameEditingController.text = value;
         },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.mail),
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          prefixIcon: const Icon(Icons.mail),
+          contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Email Address",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -94,8 +98,8 @@ class _loginNewState extends State<loginNew> {
         controller: passwordEditingController,
         obscureText: true,
         validator: (value) {
-          RegExp regex = new RegExp(r'^.{6,}$');
-          if (value!.isEmpty) {
+          RegExp regex = RegExp(r'^.{6,}$');
+          if (value.isEmpty) {
             return ("Password is required for login");
           }
           if (!regex.hasMatch(value)) {
@@ -103,12 +107,12 @@ class _loginNewState extends State<loginNew> {
           }
         },
         onSaved: (value) {
-          nameEditingController.text = value!;
+          nameEditingController.text = value;
         },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          prefixIcon: const Icon(Icons.lock),
+          contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Password",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -128,12 +132,12 @@ class _loginNewState extends State<loginNew> {
           return null;
         },
         onSaved: (value) {
-          confirmPasswordEditingController.text = value!;
+          confirmPasswordEditingController.text = value;
         },
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          prefixIcon: const Icon(Icons.lock),
+          contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Confirm Password",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -146,11 +150,11 @@ class _loginNewState extends State<loginNew> {
       borderRadius: BorderRadius.circular(30),
       color: Colors.deepOrangeAccent,
       child: MaterialButton(
-          padding: EdgeInsets.fromLTRB(50, 15, 50, 15),
+          padding: const EdgeInsets.fromLTRB(50, 15, 50, 15),
           onPressed: () {
             signUp(emailEditingController.text, passwordEditingController.text);
           },
-          child: Text(
+          child: const Text(
             "SIGNUP",
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -174,20 +178,20 @@ class _loginNewState extends State<loginNew> {
                     SizedBox(
                         height: 200,
                         child: Image.asset(
-                          "assests/logo.png",
+                          "assets/logo.png",
                           fit: BoxFit.contain,
                         )),
-                    SizedBox(height: 45),
+                    const SizedBox(height: 45),
                     nameField,
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     emailField,
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     passwordField,
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     confirmPasswordField,
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     signUpButton,
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                   ],
                 ),
               ),
@@ -198,13 +202,13 @@ class _loginNewState extends State<loginNew> {
     );
   }
   void signUp(String email, String password) async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState.validate()) {
       try {
         await _auth
             .createUserWithEmailAndPassword(email: email, password: password)
             .then((value) => {postDetailsToFirestore()})
             .catchError((e) {
-          Fluttertoast.showToast(msg: e!.message);
+          Fluttertoast.showToast(msg: e.message);
         });
       } on FirebaseAuthException catch (error) {
         switch (error.code) {
@@ -229,7 +233,7 @@ class _loginNewState extends State<loginNew> {
           default:
             errorMessage = "An undefined Error happened.";
         }
-        Fluttertoast.showToast(msg: errorMessage!);
+        Fluttertoast.showToast(msg: errorMessage);
         print(error.code);
       }
     }
@@ -237,15 +241,15 @@ class _loginNewState extends State<loginNew> {
   postDetailsToFirestore() async {
     // calling our firestore
     // calling our user model
-    // sedning these values
+    // sending these values
 
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-    User? user = _auth.currentUser;
+    User user = _auth.currentUser;
 
     UserModel userModel = UserModel();
 
     // writing all the values
-    userModel.email = user!.email;
+    userModel.email = user.email;
     userModel.uid = user.uid;
     userModel.name = nameEditingController.text;
 
@@ -257,7 +261,7 @@ class _loginNewState extends State<loginNew> {
 
     Navigator.pushAndRemoveUntil(
         (context),
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => const Main2()),
             (route) => false);
   }
 }

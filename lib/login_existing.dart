@@ -1,12 +1,17 @@
+// ignore_for_file: camel_case_types, missing_return
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sniff_me/login_new.dart';
+import 'package:sniff_me/main2.dart';
 
-import 'home.dart';
+
 
 class login extends StatefulWidget {
-  const login({Key? key}) : super(key: key);
+  const login({Key key}) : super(key: key);
+
+
 
   @override
   State<login> createState() => _loginState();
@@ -14,14 +19,14 @@ class login extends StatefulWidget {
 
 class _loginState extends State<login> {
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final TextEditingController emailcontroller = new TextEditingController();
-  final TextEditingController passwordcontroller = new TextEditingController();
+  final TextEditingController emailcontroller = TextEditingController();
+  final TextEditingController passwordcontroller = TextEditingController();
 
   final _auth = FirebaseAuth.instance;
 
-  String? errorMessage;
+  String errorMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +36,7 @@ class _loginState extends State<login> {
       controller: emailcontroller,
       keyboardType: TextInputType.emailAddress,
       validator: (value){
-        if(value!.isEmpty){
+        if(value.isEmpty){
           return ("Please enter your Email");
         }
         if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)){
@@ -41,12 +46,12 @@ class _loginState extends State<login> {
       },
       onSaved: (value)
       {
-        emailcontroller.text = value!;
+        emailcontroller.text = value;
       },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
-          prefixIcon: Icon(Icons.mail),
-          contentPadding:  EdgeInsets.fromLTRB(20, 15, 20, 15),
+          prefixIcon: const Icon(Icons.mail),
+          contentPadding:  const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Email Address",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -60,11 +65,11 @@ class _loginState extends State<login> {
       obscureText: true,
       onSaved: (value)
       {
-        passwordcontroller.text = value!;
+        passwordcontroller.text = value;
       },
       validator: (value) {
-        RegExp regex = new RegExp(r'^.{6,}$');
-        if (value!.isEmpty) {
+        RegExp regex = RegExp(r'^.{6,}$');
+        if (value.isEmpty) {
           return ("Password is required for login");
         }
         if (!regex.hasMatch(value)) {
@@ -73,8 +78,8 @@ class _loginState extends State<login> {
       },
       textInputAction: TextInputAction.done,
       decoration: InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          contentPadding:  EdgeInsets.fromLTRB(20, 15, 20, 15),
+          prefixIcon: const Icon(Icons.lock),
+          contentPadding:  const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Password",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -87,11 +92,11 @@ class _loginState extends State<login> {
       borderRadius: BorderRadius.circular(30),
       color: Colors.deepOrangeAccent,
       child: MaterialButton(
-        padding: EdgeInsets.fromLTRB(50, 15, 50, 15),
+        padding: const EdgeInsets.fromLTRB(50, 15, 50, 15),
         onPressed: (){
           signIn(emailcontroller.text, passwordcontroller.text);
         },
-        child: Text(
+        child: const Text(
           "LOGIN",
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -115,24 +120,24 @@ class _loginState extends State<login> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(
+                    const SizedBox(
                       height: 200,
                       child: Image(
-                        image: AssetImage('assests/logo.png'),
+                        image: AssetImage('assets/logo.png'),
                         fit: BoxFit.contain,
                       ),
                     ),
-                    SizedBox(height: 45),
+                    const SizedBox(height: 45),
                     emailField,
-                    SizedBox(height: 35),
+                    const SizedBox(height: 35),
                     passwordField,
-                    SizedBox(height: 25),
+                    const SizedBox(height: 25),
                     loginButton,
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text("Don't have an account? "),
+                          const Text("Don't have an account? "),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -141,7 +146,7 @@ class _loginState extends State<login> {
                                       builder: (context) =>
                                           loginNew()));
                             },
-                            child: Text(
+                            child: const Text(
                               "SignUp",
                               style: TextStyle(
                                   color: Colors.redAccent,
@@ -161,14 +166,14 @@ class _loginState extends State<login> {
   }
 
 void signIn(String email, String password) async {
-  if (_formKey.currentState!.validate()) {
+  if (_formKey.currentState.validate()) {
     try {
       await _auth
           .signInWithEmailAndPassword(email: email, password: password)
           .then((uid) => {
         Fluttertoast.showToast(msg: "Login Successful"),
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomeScreen())),
+            MaterialPageRoute(builder: (context) => const Main2())),
       });
     } on FirebaseAuthException catch (error) {
       switch (error.code) {
@@ -194,7 +199,7 @@ void signIn(String email, String password) async {
         default:
           errorMessage = "An undefined Error happened.";
       }
-      Fluttertoast.showToast(msg: errorMessage!);
+      Fluttertoast.showToast(msg: errorMessage);
       print(error.code);
     }
   }
