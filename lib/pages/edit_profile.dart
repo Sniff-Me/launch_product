@@ -1,8 +1,12 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 // import 'package:settings_ui/pages/settings.dart';
 import 'settings.dart';
+import 'package:image_picker/image_picker.dart';
 
 
 
@@ -14,19 +18,107 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+
+  File pickedImage;
+
+  void imagePickerOption() {
+    Get.bottomSheet(
+      SingleChildScrollView(
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(10.0),
+            topRight: Radius.circular(10.0),
+          ),
+          child: Container(
+            color: Colors.white,
+            height: 250,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    "Update Profile Image",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      pickImage(ImageSource.camera);
+                    },
+                    icon: const Icon(Icons.camera),
+                    label: const Text("CAMERA"),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      pickImage(ImageSource.gallery);
+                    },
+                    icon: const Icon(Icons.image),
+                    label: const Text("GALLERY"),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: const Icon(Icons.close),
+                    label: const Text("CANCEL"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
+
+  pickImage(ImageSource imageType) async {
+    try {
+      final photo = await ImagePicker().pickImage(source: imageType);
+      if (photo == null) return;
+      final tempImage = File(photo.path);
+      setState(() {
+        pickedImage = tempImage;
+      });
+
+      Get.back();
+    } catch (error) {
+      debugPrint(error.toString());
+    }
+  }
+
+
+
+
+
+
+
   bool showPassword = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: const Text('My Profile'),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.pink,
+
         elevation: 1,
 
         actions: [
           IconButton(
             icon: const Icon(
               Icons.settings,
-              color: Colors.pink,
+              color: Colors.white,
             ),
             onPressed: () {
               Navigator.push(
@@ -45,14 +137,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
           },
           child: ListView(
             children: [
-              const Text(
-                "Edit Profile",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Center(
+              // const Text(
+              //   "Profile",
+              //   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+              // ),
+              // const SizedBox(
+              //   height: 15,
+              // ),
+              Container(
                 child: Stack(
                   children: [
                     Container(
@@ -70,30 +162,57 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 offset: const Offset(0, 10))
                           ],
                           shape: BoxShape.circle,
-                          image: const DecorationImage(
+                          image:  DecorationImage(
                               fit: BoxFit.cover,
-                              image: NetworkImage(
+                              image: pickedImage!=null ?
+                              FileImage(File(pickedImage.path))
+                                  :
+                              NetworkImage(
                                   "https://qph.cf2.quoracdn.net/main-thumb-938329017-200-owmqgmbwjaswizxvffyarqlnvpfsiwwk.jpeg"
                                 // "https://images.pexels.com/photos/3307758/pexels-photo-3307758.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=250",
                               ))),
                     ),
+                    ////////////////////// THIS IS FOR EDIT ICON BELOW PROFILE IMAGE
                     Positioned(
-                        bottom: 0,
-                        right: 0,
+                      bottom: 1,
+                       left: 85,
+
                         child: Container(
-                          height: 40,
-                          width: 40,
+                          // height: 40,
+                          // width: 40,
+
+                          // onTap: () {
+                          //   showModalBottomSheet(
+                          //     context: context,
+                          //     builder: ((builder) => bottomSheet()),
+                          //   );
+                          // },
+
+
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
                               width: 4,
                               color: Theme.of(context).scaffoldBackgroundColor,
                             ),
-                            color: Colors.pink,
+                            color: Color(0xFF186CDE),
+
                           ),
-                          child: const Icon(
-                            Icons.edit,
-                            color: Colors.white,
+                          child: ElevatedButton.icon(
+
+                            icon: const Icon(Icons.edit),
+                            style: ElevatedButton.styleFrom(
+                              shape: CircleBorder(),
+
+                              padding: EdgeInsets.all(10),
+                            ),
+                           /////EDIT BUTTON ONCLICKED
+                           onPressed: imagePickerOption,
+                            label: const Text(""),
+
+                            // Icons.edit,
+                            // color: Colors.white,
+
                           ),
                         )),
                   ],
@@ -147,6 +266,48 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
+  //
+  // Widget bottomSheet() {
+  //   return Container(
+  //     height: 100.0,
+  //     width: MediaQuery.of(context).size.width,
+  //     margin: EdgeInsets.symmetric(
+  //       horizontal: 20,
+  //       vertical: 20,
+  //     ),
+  //     child: Column(
+  //       children: <Widget>[
+  //         Text(
+  //           "Choose Profile photo",
+  //           style: TextStyle(
+  //             fontSize: 20.0,
+  //           ),
+  //         ),
+  //         SizedBox(
+  //           height: 20,
+  //         ),
+  //         Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+  //           FlatButton.icon(
+  //             icon: Icon(Icons.camera),
+  //             onPressed: () {
+  //               takePhoto(ImageSource.camera);
+  //             },
+  //             label: Text("Camera"),
+  //           ),
+  //           FlatButton.icon(
+  //             icon: Icon(Icons.image),
+  //             onPressed: () {
+  //               takePhoto(ImageSource.gallery);
+  //             },
+  //             label: Text("Gallery"),
+  //           ),
+  //         ])
+  //       ],
+  //     ),
+  //   );
+  // }
+
+
 
   Widget buildTextField(
       String labelText, String placeholder, bool isPasswordTextField) {
