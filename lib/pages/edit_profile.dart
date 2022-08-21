@@ -2,11 +2,14 @@
 
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sniff_me/pages/storage_service.dart';
 // import 'package:settings_ui/pages/settings.dart';
 import 'settings.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 
 
@@ -20,6 +23,10 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
 
   File pickedImage;
+  final Storage storage= Storage();
+  final _auth = FirebaseAuth.instance;
+
+
 
   void imagePickerOption() {
     Get.bottomSheet(
@@ -88,6 +95,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final tempImage = File(photo.path);
       setState(() {
         pickedImage = tempImage;
+        storage.uploadFile(pickedImage.path,'${_auth.currentUser.email}_profile').then((value) => print('done'));
+
       });
 
       Get.back();
@@ -150,34 +159,42 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     Container(
                       width: 130,
                       height: 130,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              width: 4,
-                              color: Theme.of(context).scaffoldBackgroundColor),
-                          boxShadow: [
-                            BoxShadow(
-                                spreadRadius: 2,
-                                blurRadius: 10,
-                                color: Colors.black.withOpacity(0.1),
-                                offset: const Offset(0, 10))
-                          ],
-                          shape: BoxShape.circle,
-                          image:  DecorationImage(
-                              fit: BoxFit.cover,
-                              image: pickedImage!=null ?
-                              FileImage(File(pickedImage.path))
-                                  :
-                              NetworkImage(
-                                  "https://qph.cf2.quoracdn.net/main-thumb-938329017-200-owmqgmbwjaswizxvffyarqlnvpfsiwwk.jpeg"
-                                // "https://images.pexels.com/photos/3307758/pexels-photo-3307758.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=250",
-                              ))),
+                      // decoration: BoxDecoration(
+                      //     border: Border.all(
+                      //         width: 4,
+                      //         color: Theme.of(context).scaffoldBackgroundColor),
+                      //     boxShadow: [
+                      //       BoxShadow(
+                      //           spreadRadius: 2,
+                      //           blurRadius: 10,
+                      //           color: Colors.black.withOpacity(0.1),
+                      //           offset: const Offset(0, 10))
+                      //     ],
+                      //     shape: BoxShape.circle,
+                      //
+                      //
+                      //
+                      //     image:  DecorationImage(
+                      //         fit: BoxFit.cover,
+                      //         image: pickedImage!=null ?
+                      //
+                      //           FileImage(File(pickedImage.path))
+                      //
+                      //             :
+                      //         NetworkImage(
+                      //
+                      //             "https://qph.cf2.quoracdn.net/main-thumb-938329017-200-owmqgmbwjaswizxvffyarqlnvpfsiwwk.jpeg"
+                      //           // "https://images.pexels.com/photos/3307758/pexels-photo-3307758.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=250",
+                      //         ))
+                      // ),
                     ),
                     ////////////////////// THIS IS FOR EDIT ICON BELOW PROFILE IMAGE
                     Positioned(
-                      bottom: 1,
-                       left: 85,
+                      bottom: 10,
+                       left: 120,
 
                         child: Container(
+
                           // height: 40,
                           // width: 40,
 
@@ -214,7 +231,71 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             // color: Colors.white,
 
                           ),
-                        )),
+
+                        )
+
+                    ),
+                    //FUTURE BUILDER
+
+                    ////////////////////////////////////////////////////////////////////////////////////
+                    FutureBuilder(
+                      future: storage.downloadURL('atharvabhanage1@gmail.com_profile'),
+
+                      builder: (BuildContext context ,
+                      AsyncSnapshot<String> snapshot){
+                        print("jjjjjjjjj"+snapshot.toString());
+                          if(snapshot.connectionState== ConnectionState.done && snapshot.hasData
+                              && snapshot.hasData){
+                            return Container(
+                              width: 130,
+                              height: 130,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 4,
+                                      color: Theme.of(context).scaffoldBackgroundColor),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        spreadRadius: 2,
+                                        blurRadius: 10,
+                                        color: Colors.black.withOpacity(0.1),
+                                        offset: const Offset(0, 10))
+                                  ],
+                                  shape: BoxShape.circle,
+
+                                  image:  DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image:
+                                      pickedImage!=null ?
+
+                                        FileImage(File(pickedImage.path))
+                                          :
+                                      NetworkImage(
+                                          snapshot.data,
+                                          // "https://qph.cf2.quoracdn.net/main-thumb-938329017-200-owmqgmbwjaswizxvffyarqlnvpfsiwwk.jpeg"
+                                        // "https://images.pexels.com/photos/3307758/pexels-photo-3307758.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=250",
+                                      ))
+                              ),
+
+
+
+
+                              // child: Image.network(
+                              //   snapshot.data,
+                              //   fit: BoxFit.cover,
+                              // ),
+                            );
+                          }
+                          if(snapshot.connectionState== ConnectionState.waiting || !snapshot.hasData){
+                            return CircularProgressIndicator();
+                          }
+                          return Container();
+                      }
+
+                    )
+
+
+
+
                   ],
                 ),
               ),
