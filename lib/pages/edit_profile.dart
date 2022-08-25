@@ -9,22 +9,30 @@ import 'package:sniff_me/pages/storage_service.dart';
 // import 'package:settings_ui/pages/settings.dart';
 import 'settings.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({Key key}) : super(key: key);
 
+
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
+
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
 
+
+
+  //THis is for initialising the parameteres
   File pickedImage;
   final Storage storage= Storage();
   final _auth = FirebaseAuth.instance;
+
+  File _image;
+
 
 
 
@@ -45,7 +53,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
-                    "Update Profile Image",
+
+                    "Update Profile Image ",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
@@ -114,6 +123,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool showPassword = false;
   @override
   Widget build(BuildContext context) {
+    double height=MediaQuery.of(context).size.height;
     return Scaffold(
 
       appBar: AppBar(
@@ -146,47 +156,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
           },
           child: ListView(
             children: [
-              // const Text(
-              //   "Profile",
-              //   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-              // ),
-              // const SizedBox(
-              //   height: 15,
-              // ),
+
               Container(
                 child: Stack(
                   children: [
                     Container(
                       width: 130,
                       height: 130,
-                      // decoration: BoxDecoration(
-                      //     border: Border.all(
-                      //         width: 4,
-                      //         color: Theme.of(context).scaffoldBackgroundColor),
-                      //     boxShadow: [
-                      //       BoxShadow(
-                      //           spreadRadius: 2,
-                      //           blurRadius: 10,
-                      //           color: Colors.black.withOpacity(0.1),
-                      //           offset: const Offset(0, 10))
-                      //     ],
-                      //     shape: BoxShape.circle,
-                      //
-                      //
-                      //
-                      //     image:  DecorationImage(
-                      //         fit: BoxFit.cover,
-                      //         image: pickedImage!=null ?
-                      //
-                      //           FileImage(File(pickedImage.path))
-                      //
-                      //             :
-                      //         NetworkImage(
-                      //
-                      //             "https://qph.cf2.quoracdn.net/main-thumb-938329017-200-owmqgmbwjaswizxvffyarqlnvpfsiwwk.jpeg"
-                      //           // "https://images.pexels.com/photos/3307758/pexels-photo-3307758.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=250",
-                      //         ))
-                      // ),
+
                     ),
                     ////////////////////// THIS IS FOR EDIT ICON BELOW PROFILE IMAGE
                     Positioned(
@@ -194,16 +171,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                        left: 120,
 
                         child: Container(
-
-                          // height: 40,
-                          // width: 40,
-
-                          // onTap: () {
-                          //   showModalBottomSheet(
-                          //     context: context,
-                          //     builder: ((builder) => bottomSheet()),
-                          //   );
-                          // },
 
 
                           decoration: BoxDecoration(
@@ -239,11 +206,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                     ////////////////////////////////////////////////////////////////////////////////////
                     FutureBuilder(
-                      future: storage.downloadURL('atharvabhanage1@gmail.com_profile'),
+                      future: storage.downloadURL('${_auth.currentUser.email.toString()}_profile'),
 
                       builder: (BuildContext context ,
                       AsyncSnapshot<String> snapshot){
-                        print("jjjjjjjjj"+snapshot.toString());
+                        print("jjjjjjjjj"+_auth.currentUser.displayName.toString());
                           if(snapshot.connectionState== ConnectionState.done && snapshot.hasData
                               && snapshot.hasData){
                             return Container(
@@ -270,10 +237,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         FileImage(File(pickedImage.path))
                                           :
                                       NetworkImage(
+
                                           snapshot.data,
                                           // "https://qph.cf2.quoracdn.net/main-thumb-938329017-200-owmqgmbwjaswizxvffyarqlnvpfsiwwk.jpeg"
                                         // "https://images.pexels.com/photos/3307758/pexels-photo-3307758.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=250",
-                                      ))
+                                      )
+                                )
                               ),
 
 
@@ -302,92 +271,76 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(
                 height: 35,
               ),
-              buildTextField("Full Name", "Atharva Bhanage", false),
-              buildTextField("E-mail", "atharvabhanage1@gmail.com", false),
+              //////////////////////////////////deelte
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance.collection("users").doc(_auth.currentUser.uid.toString()).snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return LinearProgressIndicator();
 
-              buildTextField("Location", "Goa, India", false),
+                  return Text( snapshot.data['firstName']);
+                },
+              ),
+              ///////////////////////dele
+
+              // buildTextField("E-mail", "atharvabhanage1@gmail.com", false),
+
+              // buildTextField("Location", "Goa, India", false),
               const SizedBox(
                 height: 35,
               ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     FlatButton(
-              //       padding: EdgeInsets.symmetric(horizontal: 50),
-              //       shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(20)),
-              //       onPressed: () {},
-              //       child: Text("CANCEL",
-              //           style: TextStyle(
-              //               fontSize: 14,
-              //               letterSpacing: 2.2,
-              //               color: Colors.black)),
-              //     ),
-              //
-              //     RaisedButton(
-              //       onPressed: () {},
-              //       color: Colors.pink,
-              //       padding: EdgeInsets.symmetric(horizontal: 50),
-              //       elevation: 2,
-              //       shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(20)),
-              //       child: Text(
-              //         "SAVE",
-              //         style: TextStyle(
-              //             fontSize: 14,
-              //             letterSpacing: 2.2,
-              //             color: Colors.white),
-              //       ),
-              //     )
-              //   ],
-              // )
+              ///////////////////////////////////////////////
+              StreamBuilder(
+
+                stream: FirebaseFirestore.instance.collection("users").doc(_auth.currentUser.uid.toString()).collection("images").snapshots(),
+                builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot){
+
+
+                  if(!snapshot.hasData){
+                    return (const Center(child: Text("No Image Uplaoded")));
+
+                  }
+                  else{
+                    return SizedBox(
+                      height: height*0.55,
+                      child: GridView.builder(itemCount: snapshot.data.docs.length,
+
+                          gridDelegate:
+                           const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 2,
+                            crossAxisSpacing: 2,
+                            childAspectRatio: 0.75,
+                          ),
+                          itemBuilder: (BuildContext context,int index) {
+                            String url = snapshot.data.docs[index]['downloadURL'];
+                            return Image.network(url,
+                                height: 300,
+                                fit: BoxFit.cover);
+
+                          } ),
+                    );
+
+                  }
+
+                },
+              )
+
             ],
           ),
+
         ),
+
+
+
+
+
       ),
+
+
+
+
     );
   }
-  //
-  // Widget bottomSheet() {
-  //   return Container(
-  //     height: 100.0,
-  //     width: MediaQuery.of(context).size.width,
-  //     margin: EdgeInsets.symmetric(
-  //       horizontal: 20,
-  //       vertical: 20,
-  //     ),
-  //     child: Column(
-  //       children: <Widget>[
-  //         Text(
-  //           "Choose Profile photo",
-  //           style: TextStyle(
-  //             fontSize: 20.0,
-  //           ),
-  //         ),
-  //         SizedBox(
-  //           height: 20,
-  //         ),
-  //         Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-  //           FlatButton.icon(
-  //             icon: Icon(Icons.camera),
-  //             onPressed: () {
-  //               takePhoto(ImageSource.camera);
-  //             },
-  //             label: Text("Camera"),
-  //           ),
-  //           FlatButton.icon(
-  //             icon: Icon(Icons.image),
-  //             onPressed: () {
-  //               takePhoto(ImageSource.gallery);
-  //             },
-  //             label: Text("Gallery"),
-  //           ),
-  //         ])
-  //       ],
-  //     ),
-  //   );
-  // }
-
 
 
   Widget buildTextField(
