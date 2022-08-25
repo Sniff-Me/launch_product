@@ -9,7 +9,8 @@ import 'package:sniff_me/pages/storage_service.dart';
 // import 'package:settings_ui/pages/settings.dart';
 import 'settings.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class EditProfilePage extends StatefulWidget {
@@ -23,11 +24,14 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
 
+
+
+  //THis is for initialising the parameteres
   File pickedImage;
   final Storage storage= Storage();
   final _auth = FirebaseAuth.instance;
 
-
+  File _image;
 
 
 
@@ -119,6 +123,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool showPassword = false;
   @override
   Widget build(BuildContext context) {
+    double height=MediaQuery.of(context).size.height;
     return Scaffold(
 
       appBar: AppBar(
@@ -266,19 +271,74 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(
                 height: 35,
               ),
-              Text( _auth.currentUser.displayName.toString(),
-              style:  TextStyle(color: Colors.black,fontSize: 14)),
+              //////////////////////////////////deelte
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance.collection("users").doc(_auth.currentUser.uid.toString()).snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return LinearProgressIndicator();
+
+                  return Text( snapshot.data['firstName']);
+                },
+              ),
+              ///////////////////////dele
+
               // buildTextField("E-mail", "atharvabhanage1@gmail.com", false),
-              //
+
               // buildTextField("Location", "Goa, India", false),
               const SizedBox(
                 height: 35,
               ),
+              ///////////////////////////////////////////////
+              StreamBuilder(
+
+                stream: FirebaseFirestore.instance.collection("users").doc(_auth.currentUser.uid.toString()).collection("images").snapshots(),
+                builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot){
+
+
+                  if(!snapshot.hasData){
+                    return (const Center(child: Text("No Image Uplaoded")));
+
+                  }
+                  else{
+                    return SizedBox(
+                      height: height*0.55,
+                      child: GridView.builder(itemCount: snapshot.data.docs.length,
+
+                          gridDelegate:
+                           const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 2,
+                            crossAxisSpacing: 2,
+                            childAspectRatio: 0.75,
+                          ),
+                          itemBuilder: (BuildContext context,int index) {
+                            String url = snapshot.data.docs[index]['downloadURL'];
+                            return Image.network(url,
+                                height: 300,
+                                fit: BoxFit.cover);
+
+                          } ),
+                    );
+
+                  }
+
+                },
+              )
 
             ],
           ),
+
         ),
+
+
+
+
+
       ),
+
+
+
+
     );
   }
 

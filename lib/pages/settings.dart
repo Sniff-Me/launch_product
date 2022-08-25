@@ -1,7 +1,10 @@
 // ignore_for_file: library_private_types_in_public_api, deprecated_member_use
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sniff_me/login_new.dart';
+import 'package:sniff_me/splash.dart';
 
 
 
@@ -13,6 +16,10 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+
+  final _auth = FirebaseAuth.instance;
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,7 +109,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
-                onPressed: () {},
+                onPressed: () { _auth.signOut();
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => splashScreen(),));
+                  },
                 child: const Text("SIGN OUT",
                     style: TextStyle(
                         fontSize: 16, letterSpacing: 2.2, color: Colors.black)),
