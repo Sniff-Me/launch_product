@@ -10,6 +10,11 @@ import 'package:sniff_me/components/items.dart';
 import 'package:sniff_me/components/categories.dart';
 import 'package:sniff_me/pages/details/details_page.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+
+
 class CartPage extends StatefulWidget {
   const CartPage({Key key}) : super(key: key);
 
@@ -25,13 +30,72 @@ class _CartPageState extends State<CartPage> {
     'https://i.pinimg.com/originals/ef/59/0d/ef590d3e2990e6827d96ad8ce55a755b.png',
   ];
 
+
+  final _auth = FirebaseAuth.instance;
+  String cnt="0";
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
         title: const Text('CartPage'),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.pink,
+
+
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.currency_exchange_sharp,
+              color: Colors.white,
+            ),
+
+
+
+          ),
+
+          StreamBuilder(
+
+            stream:  FirebaseFirestore.instance.collection("users").doc(_auth.currentUser.uid.toString()).collection("images").snapshots(),
+            builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot){
+
+              cnt=  (snapshot.data.docs.length*10).toString();
+              Future.delayed(Duration(seconds: 5), (){
+                print("Executed after 5 seconds");
+              });
+              print("llllllllllllllllllllll"+ cnt);
+              return Padding(
+                padding: const EdgeInsets.only(top: 14,right: 8),
+                child: Text(cnt,style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24.0,
+
+
+                  fontFamily: 'OpenSans',
+                  fontWeight: FontWeight.w600,
+
+                )),
+              );
+
+            },
+
+          ),
+
+          //
+          // Text((cnt==null)? "0": cnt ,
+          //     style: TextStyle(
+          //       color: Colors.white,
+          //       fontSize: 35.0,
+          //       letterSpacing: 12,
+          //
+          //       fontFamily: 'OpenSans',
+          //       fontWeight: FontWeight.w600,
+          //
+          //     ))
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

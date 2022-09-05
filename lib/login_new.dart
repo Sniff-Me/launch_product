@@ -252,6 +252,7 @@ class _loginNewState extends State<loginNew> {
     userModel.email = user.email;
     userModel.uid = user.uid;
     userModel.name = nameEditingController.text;
+    userModel.coins=0;
 
     await firebaseFirestore
         .collection("users")

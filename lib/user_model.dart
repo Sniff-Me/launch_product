@@ -2,8 +2,9 @@ class UserModel {
   String uid;
   String email;
   String name;
+  int coins;
 
-  UserModel({this.uid, this.email, this.name});
+  UserModel({this.uid, this.email, this.name,this.coins});
 
   // receiving data from server
   factory UserModel.fromMap(map) {
@@ -11,6 +12,7 @@ class UserModel {
       uid: map['uid'],
       email: map['email'],
       name: map['name'],
+      coins: map['coins'],
     );
   }
 
@@ -20,6 +22,7 @@ class UserModel {
       'uid': uid,
       'email': email,
       'firstName': name,
+      'coins': coins,
     };
   }
 }
